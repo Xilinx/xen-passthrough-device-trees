@@ -1,0 +1,80 @@
+/dts-v1/;
+
+/ {
+	#address-cells = <0x2>;
+	#size-cells = <0x2>;
+
+	passthrough {
+		compatible = "simple-bus";
+		ranges;
+		#address-cells = <0x2>;
+		#size-cells = <0x2>;
+
+		pss_ref_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x1fc9350>;
+			phandle = <0x6>;
+		};
+
+		video_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x19bfcc0>;
+			phandle = <0x7>;
+		};
+
+		pss_alt_ref_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x0>;
+			phandle = <0x8>;
+		};
+
+		gt_crx_ref_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x66ff300>;
+			phandle = <0xa>;
+		};
+
+		aux_ref_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x19bfcc0>;
+			phandle = <0x9>;
+		};
+
+		zynqmp-firmware {
+			compatible = "xlnx,zynqmp-firmware", "xlnx,zynqmp";
+			method = "smc";
+			#power-domain-cells = <0x1>;
+			phandle = <0x26>;
+
+			clock-controller {
+				u-boot,dm-pre-reloc;
+				#clock-cells = <0x1>;
+				compatible = "xlnx,zynqmp-clk";
+				clocks = <0x6 0x7 0x8 0x9 0xa>;
+				clock-names = "pss_ref_clk", "video_clk", "pss_alt_ref_clk", "aux_ref_clk", "gt_crx_ref_clk";
+				phandle = <0x3>;
+			};
+		};
+
+		serial@ff000000 {
+			compatible = "cdns,uart-r1p12", "xlnx,xuartps";
+			status = "okay";
+			interrupt-parent = <0xfde8>;
+			interrupts = <0x0 0x15 0x4>;
+			reg = <0x0 0xff000000 0x0 0x1000>;
+			clock-names = "uart_clk", "pclk";
+			clocks = <0x3 0x38 0x3 0x1f>;
+			cts-override;
+			device_type = "serial";
+			port-number = <0x0>;
+			xen,force-assign-without-iommu = <1>;
+			xen,reg = <0x0 0xff000000 0x0 0x1000 0x0 0xff000000>, <0x0 0xff110000 0x0 0x1000 0x0 0xff110000>, <0x0 0xff120000 0x0 0x1000 0x0 0xff120000>, <0x0 0xff130000 0x0 0x1000 0x0 0xff130000>, <0x0 0xff140000 0x0 0x1000 0x0 0xff140000>;
+			xen,path = "/axi/serial@ff000000";
+		};
+	};
+};
