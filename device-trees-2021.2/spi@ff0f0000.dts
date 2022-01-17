@@ -1,0 +1,109 @@
+/dts-v1/;
+
+/ {
+	#address-cells = <0x2>;
+	#size-cells = <0x2>;
+
+	passthrough {
+		compatible = "simple-bus";
+		ranges;
+		#address-cells = <0x2>;
+		#size-cells = <0x2>;
+
+		zynqmp-firmware {
+			compatible = "xlnx,zynqmp-firmware", "xlnx,zynqmp";
+			method = "smc";
+			#power-domain-cells = <0x1>;
+			phandle = <0x1>;
+
+			clock-controller {
+				u-boot,dm-pre-reloc;
+				#clock-cells = <0x1>;
+				compatible = "xlnx,zynqmp-clk";
+				clocks = <0x6 0x7 0x8 0x9 0xa>;
+				clock-names = "pss_ref_clk", "video_clk", "pss_alt_ref_clk", "aux_ref_clk", "gt_crx_ref_clk";
+				phandle = <0x3>;
+			};
+
+		};
+
+		pss_ref_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x1fc9350>;
+			phandle = <0x6>;
+		};
+
+		video_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x1fc9f08>;
+			phandle = <0x7>;
+		};
+
+		pss_alt_ref_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x0>;
+			phandle = <0x8>;
+		};
+
+		gt_crx_ref_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x66ff300>;
+			phandle = <0xa>;
+		};
+
+		aux_ref_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x19bfcc0>;
+			phandle = <0x9>;
+		};
+
+		spi@ff0f0000 {
+			u-boot,dm-pre-reloc;
+			compatible = "xlnx,zynqmp-qspi-1.0";
+			status = "okay";
+			clock-names = "ref_clk", "pclk";
+			interrupts = <0x0 0xf 0x4>;
+			interrupt-parent = <0xfde8>;
+			num-cs = <0x1>;
+			reg = <0x0 0xff0f0000 0x0 0x1000>;
+			#address-cells = <0x1>;
+			#size-cells = <0x0>;
+			clocks = <0x3 0x35 0x3 0x1f>;
+			is-dual = <0x1>;
+			spi-rx-bus-width = <0x4>;
+			spi-tx-bus-width = <0x4>;
+			xen,path = "/axi/spi@ff0f0000";
+			xen,reg = <0x0 0xff0f0000 0x0 0x1000 0x0 0xff0f0000>, <0x0 0xff110000 0x0 0x1000 0x0 0xff110000>, <0x0 0xff120000 0x0 0x1000 0x0 0xff120000>, <0x0 0xff130000 0x0 0x1000 0x0 0xff130000>, <0x0 0xff140000 0x0 0x1000 0x0 0xff140000>;
+
+			flash@0 {
+				compatible = "n25q512a", "micron,m25p80";
+				#address-cells = <0x1>;
+				#size-cells = <0x1>;
+				reg = <0x0>;
+				spi-tx-bus-width = <0x1>;
+				spi-rx-bus-width = <0x4>;
+				spi-max-frequency = <0x66ff300>;
+
+				partition@0x00000000 {
+					label = "boot";
+					reg = <0x0 0x1e00000>;
+				};
+
+				partition@0x01e00000 {
+					label = "bootenv";
+					reg = <0x1e00000 0x40000>;
+				};
+
+				partition@0x01e40000 {
+					label = "kernel";
+					reg = <0x1e40000 0x2400000>;
+				};
+			};
+		};
+	};
+};
