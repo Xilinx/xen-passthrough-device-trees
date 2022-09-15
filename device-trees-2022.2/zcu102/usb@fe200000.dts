@@ -1,0 +1,100 @@
+/dts-v1/;
+
+/ {
+
+	#address-cells = <0x2>;
+	#size-cells = <0x2>;
+
+	passthrough {
+		compatible = "simple-bus";
+		ranges;
+		#address-cells = <0x2>;
+		#size-cells = <0x2>;
+
+		zynqmp-firmware {
+			compatible = "xlnx,zynqmp-firmware", "xlnx,zynqmp";
+			method = "smc";
+			#power-domain-cells = <0x1>;
+			phandle = <0x1>;
+
+			clock-controller {
+				u-boot,dm-pre-reloc;
+				#clock-cells = <0x1>;
+				compatible = "xlnx,zynqmp-clk";
+				clocks = <0x6 0x7 0x8 0x9 0xa>;
+				clock-names = "pss_ref_clk", "video_clk", "pss_alt_ref_clk", "aux_ref_clk", "gt_crx_ref_clk";
+				phandle = <0x3>;
+			};
+
+			reset-controller {
+				compatible = "xlnx,zynqmp-reset";
+				#reset-cells = <0x01>;
+				phandle = <0x0f>;
+			};
+
+			gpio {
+				compatible = "xlnx,zynqmp-gpio-modepin";
+				gpio-controller;
+				#gpio-cells = <0x02>;
+				phandle = <0x20>;
+			};
+
+		};
+
+		pss_ref_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x1fc9350>;
+			phandle = <0x6>;
+		};
+
+		video_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x1fc9f08>;
+			phandle = <0x7>;
+		};
+
+		pss_alt_ref_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x0>;
+			phandle = <0x8>;
+		};
+
+		aux_ref_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x19bfcc0>;
+			phandle = <0x9>;
+		};
+
+		gt_crx_ref_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <0x66ff300>;
+			phandle = <0xa>;
+		};
+
+		usb@fe200000 {
+			compatible = "snps,dwc3";
+			status = "okay";
+			reg = <0x00 0xfe200000 0x00 0x40000>;
+			interrupt-parent = <0xfde8>;
+			interrupt-names = "dwc_usb3\0otg\0hiber";
+			interrupts = <0x00 0x41 0x04 0x00 0x45 0x04 0x00 0x4b 0x04>;
+			snps,quirk-frame-length-adjustment = <0x20>;
+			snps,refclk_fladj;
+			clock-names = "ref";
+			snps,enable_guctl1_resume_quirk;
+			snps,enable_guctl1_ipd_quirk;
+			snps,xhci-stream-quirk;
+			clocks = <0x03 0x22>;
+			dr_mode = "host";
+			snps,usb3_lpm_capable;
+			maximum-speed = "super-speed";
+			xen,reg = <0x00 0xfe200000 0x00 0x40000 0x00 0xfe200000>;
+			xen,path = "/axi/usb0@ff9d0000/usb@fe200000";
+		};
+	};
+};
