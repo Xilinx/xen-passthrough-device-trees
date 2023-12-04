@@ -1,0 +1,40 @@
+/dts-v1/;
+
+/ {
+	#address-cells = <0x02>;
+	#size-cells = <0x02>;
+
+	passthrough {
+		compatible = "simple-bus";
+		ranges;
+		#address-cells = <0x02>;
+		#size-cells = <0x02>;
+
+		clk: clk {
+			#clock-cells = <0x00>;
+			clock-frequency = <0x1fca034>;
+			compatible = "fixed-clock";
+		};
+
+		sata: ahci@fd0c0000 {
+			xlnx,tz-nonsecure-sata1 = <0x00>;
+			xlnx,tz-nonsecure-sata0 = <0x00>;
+			ceva,p1-retry-params = <0x96a43ffc>;
+			ceva,p1-burst-params = <0x13084a06>;
+			ceva,p1-comwake-params = <0x614080e>;
+			ceva,p1-cominit-params = <0x18401828>;
+			ceva,p0-retry-params = <0x96a43ffc>;
+			ceva,p0-burst-params = <0x13084a06>;
+			ceva,p0-comwake-params = <0x614080e>;
+			ceva,p0-cominit-params = <0x18401828>;
+			clocks = <&clk>;
+			interrupts = <0x00 0x85 0x04>;
+			interrupt-parent = <0xfde8>;
+			reg = <0x00 0xfd0c0000 0x00 0x2000>;
+			status = "okay";
+			compatible = "ceva,ahci-1v84";
+			xen,path = "/axi/ahci@fd0c0000";
+			xen,reg = <0x00 0xfd0c0000 0x00 0x2000 0x00 0xfd0c0000>;
+		};
+	};
+};

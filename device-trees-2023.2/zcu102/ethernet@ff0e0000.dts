@@ -1,0 +1,53 @@
+/dts-v1/;
+
+/ {
+	#address-cells = <0x02>;
+	#size-cells = <0x02>;
+
+	passthrough {
+		compatible = "simple-bus";
+		ranges;
+		#address-cells = <0x02>;
+		#size-cells = <0x02>;
+
+		clk: clk {
+			#clock-cells = <0x0>;
+			clock-frequency = <0x7732877>;
+			compatible = "fixed-clock";
+		};
+
+		gem3: ethernet@ff0e0000 {
+			xlnx,ptp-enet-clock = <0x00>;
+			phy-mode = "rgmii-id";
+			phy-handle = <&phyc>;
+			assigned-clocks = <&clk>;
+			clocks = <&clk &clk &clk &clk &clk>;
+			reset-names = "gem3_rst";
+			#size-cells = <0x00>;
+			#address-cells = <0x01>;
+			clock-names = "pclk", "hclk", "tx_clk", "rx_clk", "tsu_clk";
+			reg = <0x00 0xff0e0000 0x00 0x1000>;
+			interrupts = <0x00 0x3f 0x04 0x00 0x3f 0x04>;
+			interrupt-parent = <0xfde8>;
+			status = "okay";
+			compatible = "xlnx,zynqmp-gem", "cdns,gem";
+			xen,path = "/axi/ethernet@ff0e0000";
+			xen,reg = <0x00 0xff0e0000 0x00 0x1000 0x00 0xff0e0000>;
+
+			mdio: mdio {
+				#size-cells = <0x00>;
+				#address-cells = <0x01>;
+
+				phyc: ethernet-phy@c {
+					ti,dp83867-rxctrl-strap-quirk;
+					ti,fifo-depth = <0x01>;
+					ti,tx-internal-delay = <0x0a>;
+					ti,rx-internal-delay = <0x08>;
+					reg = <0x0c>;
+					compatible = "ethernet-phy-id2000.a231";
+					#phy-cells = <0x01>;
+				};
+			};
+		};
+	};
+};

@@ -1,0 +1,38 @@
+/dts-v1/;
+
+/ {
+	#address-cells = <0x02>;
+	#size-cells = <0x02>;
+
+	passthrough {
+		compatible = "simple-bus";
+		ranges;
+		#address-cells = <0x02>;
+		#size-cells = <0x02>;
+
+		clk: clk {
+			#clock-cells = <0x0>;
+			clock-frequency = <0xb2cbcae>;
+			compatible = "fixed-clock";
+		};
+
+		sdhci1: mmc@ff170000 {
+			xlnx,mio-bank = <0x01>;
+			clock-frequency = <0xb2cbcae>;
+			no-1-8-v;
+			assigned-clocks = <&clk>;
+			clocks = <&clk &clk>;
+			clock-output-names = "clk_out_sd1\0clk_in_sd1";
+			#clock-cells = <0x01>;
+			clock-names = "clk_xin", "clk_ahb";
+			reg = <0x00 0xff170000 0x00 0x1000>;
+			interrupts = <0x00 0x31 0x04>;
+			interrupt-parent = <0xfde8>;
+			status = "okay";
+			compatible = "xlnx,zynqmp-8.9a", "arasan,sdhci-8.9a";
+			u-boot,dm-pre-reloc;
+			xen,path = "/axi/mmc@ff170000";
+			xen,reg = <0x00 0xff170000 0x00 0x1000 0x00 0xff170000>;
+		};
+	};
+};
